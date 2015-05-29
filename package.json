@@ -1,0 +1,24 @@
+{
+  "name": "coconut-graph",
+  "version": "1.0.0",
+  "description": "Graph lib using d3 ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jieter/coconut-graph.git"
+  },
+  "author": "Jan Pieter Waagmeester <jieter@jieter.nl>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jieter/coconut-graph/issues"
+  },
+  "homepage": "https://github.com/jieter/coconut-graph",
+  "dependencies": {
+    "d3": "^3.5.5",
+    "d3-legend": "^1.0.0",
+    "d3-tip": "^0.6.7"
+  }
+}

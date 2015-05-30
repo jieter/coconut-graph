@@ -8,15 +8,42 @@
 		#mocha {
 			clear: both;
 		}
+		#container {
+			height: 180px;
+			width: 1000px;
+		}
+
+		.axis path, .axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+		}
+		.axis text {
+			text-anchor: end;
+		}
+		.axis {
+			font: 10px sans-serif;
+		}
+		.line {
+			fill: none;
+			stroke-width: 1.5px;
+			stroke: red;
+		}
+		rect.water {
+			fill: steelblue;
+			stroke: steelblue;
+		}
 	</style>
 </head>
 <body>
+	<div id="container" class="existing-class"></div>
 	<div id="mocha"></div>
 
-    <script src="../bundle.js"></script>
+	<script src="../bundle.js"></script>
 
 	<script src="../node_modules/chai/chai.js"></script>
 	<script src="../node_modules/mocha/mocha.js"></script>
+	<script src="../node_modules/chai-spies/chai-spies.js"></script>
 
 	<script>
 		mocha.setup('bdd');

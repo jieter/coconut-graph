@@ -4,7 +4,7 @@
   "description": "Graph lib using d3 ",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint && npm run bundle && npm run testsuite",
+    "test": "npm run bundle && npm run lint && npm run testsuite",
     "bundle": "browserify index.js -o bundle.js",
     "lint": "eslint src/ test/",
     "testsuite": "mocha-phantomjs test/index.html",

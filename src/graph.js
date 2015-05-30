@@ -21,7 +21,10 @@ var Graph = Class.extend({
 		}
 	},
 	statics: {
-		parseDatetime: d3.time.format('%Y-%m-%dT%H:%M:%S').parse
+		parseDatetime: function (s) {
+			return (typeof s === 'string') ?
+				d3.time.format('%Y-%m-%dT%H:%M:%S').parse(s) : s;
+		}
 	},
 
 	initialize: function (options) {
@@ -58,11 +61,6 @@ var Graph = Class.extend({
 		d3.select(window).on('resize.' + (Graph.onResizeCounter++), function () {
 			self.onResize();
 		});
-
-		if (options.url && options.url !== undefined) {
-			this.original_url = options.url;
-			this.load(options.url, options.callback);
-		}
 	},
 
 	data_key: function (name) {
@@ -117,10 +115,10 @@ var Graph = Class.extend({
 			}
 		});
 	},
-
 	_initContainer: function () {
 		var container = d3.select(this.container);
-		container.classed('chart ' + (this.options.className || ''));
+
+		container.classed('chart ' + (this.options.className || ''), true);
 
 		var svg = container.append('svg')
 			.attr({width: this.outerWidth(), height: this.outerHeight()})

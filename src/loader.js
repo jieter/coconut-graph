@@ -9,32 +9,49 @@ module.exports = Class.extend({
 	initialize: function (url, options) {
 		Util.setOptions(this, options);
 
-		var graphs = {};
+		var graphs = this.graphs = {};
 		options.graphs.forEach(function(graph) {
 			graphs[graph.container] = new Graph(graph);
 		});
-		this.graphs = graphs;
-		this.load(url);
+
+		if (typeof url === 'object') {
+			this.load_json(url);
+		} else {
+			this.load(url);
+		}
 	},
 
 	load: function (url, callback) {
 		var self = this;
 		this.url = url;
-		callback = (callback !== undefined) ? callback : this.options.callback;
 
+		// TODO: add spinner
 		d3.json(url, function(error, response) {
-			self.meta = response.meta;
-			response.data = self.normalize(response.data);
-			for (var key in self.graphs) {
-				var graph = self.graphs[key];
+			// TODO: handle error here.
 
-				graph.meta = response.meta;
-				graph.data = response.data;
-
-				self.graphs[key].render(callback);
-			}
+			self.load_json(response, callback);
 		});
 		return this;
+	},
+
+	eachGraph: function (callback) {
+		for (var key in this.graphs) {
+			callback.call(this, this.graphs[key], key);
+		}
+	},
+
+	load_json: function (response, callback) {
+		callback = (callback !== undefined) ? callback : this.options.callback;
+
+		this.meta = response.meta;
+		response.data = this.normalize(response.data);
+
+		this.eachGraph(function (graph, key) {
+			graph.meta = response.meta;
+			graph.data = response.data;
+
+			this.graphs[key].render(callback);
+		});
 	},
 
 	load_url: function (name, callback) {
@@ -60,9 +77,9 @@ module.exports = Class.extend({
 		return data;
 	},
 	onResize: function () {
-		for (var key in this.graphs) {
-			this.graphs[key].onResize();
-		}
+		this.eachGraph(function (graph) {
+			graph.onResize();
+		});
 		return this;
 	}
 });

@@ -37,7 +37,7 @@ var Graph = Class.extend({
 				plot.type = 'line';
 			}
 			if (!('key' in plot)) {
-				throw 'key must be suplied.'
+				throw 'key must be suplied.';
 			}
 			if (!('axis' in plot)) {
 				plot.axis = 'y';
@@ -260,7 +260,7 @@ var Graph = Class.extend({
 		this._updateAxes();
 
 		this.eachPlot(function (plot) {
-			if (plot.type == 'bar') {
+			if (plot.type === 'bar') {
 				var x = this.scale.x;
 
 				this.svg.selectAll('.water')
@@ -327,6 +327,7 @@ var Graph = Class.extend({
 		}
 		this.svg.selectAll('.axis.y').call(this.axes.y);
 
+		var readable_interval = this.meta.readable_interval;
 		var tip = d3tip().attr('class', 'bar-tooltip')
 			.offset([-10, 0])
 			.html(function(d) {
@@ -342,7 +343,6 @@ var Graph = Class.extend({
 
 		var height = this.height();
 		var sliceWidth = this.width() / this.data.slices;
-		var readable_interval = this.meta.readable_interval;
 
 		var bar = this.plots[plot.key] = function (s) {
 			s.attr({

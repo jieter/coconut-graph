@@ -11,7 +11,7 @@ Depends heavily on json structure used in the coconut wepapp:
     "meta": {
         "period": "day",
         "urls": {
-            "next": "<url to get json for the day>",
+            "next": "<url to get json for the next day>",
             "previous": "<url to get json for previous day>"
         },
         "readable_interval": "15 minuten"
@@ -32,7 +32,7 @@ Depends heavily on json structure used in the coconut wepapp:
 
 ```javascript
 var Loader = require('coconut-graph').Loader;
-var url = '/api.json'; // url to above json
+var url = '/graph-data.json'; // url to above json
 
 var graph = new Loader(url, {
 	graphs: [{
@@ -40,4 +40,10 @@ var graph = new Loader(url, {
 		plot: { type: 'bar', key: 'amount', label: 'verbruik [l]'}
 	}]
 });
+
+// Loads the data for the next day, url defined in meta.urls
+graph.load_url('next');
+
+// previous day
+graph.load_url('previous');
 ```

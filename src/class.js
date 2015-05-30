@@ -1,5 +1,5 @@
 /*!
- * Copied part of Leaflet 
+ * Copied part of Leaflet
  * https://github.com/Leaflet/Leaflet/blob/master/LICENSE
  */
 /* L.Class powers the OOP facilities of the library.

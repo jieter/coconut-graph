@@ -2,7 +2,7 @@ var Class = require('./class.js');
 var Util = require('./util.js');
 
 var d3 = require('d3');
-var d3tip = require('d3-tip')(d3);
+
 var d3legend = require('d3-legend')(d3);
 
 var timeAxis = require('./time-xaxis.js');
@@ -224,7 +224,7 @@ var Graph = Class.extend({
 			this.svg.selectAll('.axis.' + plot.axis).call(this.axes[plot.axis]);
 
 			// Do the actual plotting
-			this.plots[plot.key] = this['plot_' + plot.type](xscale, this.scale[plot.axis], plot);
+			this.plots[plot.key] = this['plot_' + plot.type](xscale, this.scale[plot.axis], plot, this);
 		});
 
 		if (this.firstRender && this.options.show_legend) {
@@ -259,112 +259,16 @@ var Graph = Class.extend({
 
 		this.eachPlot(function (plot) {
 			if (plot.type === 'bar') {
-				var x = this.scale.x;
-
-				this.svg.selectAll('.water')
-					.attr('x', function(d) { return x(d[0]); })
-					.attr('width', this.width() / this.data.slices);
+				this.svg.selectAll('.bar.' + plot.key).call(this.plots[plot.key]);
 			} else {
 				this.svg.selectAll('.plot.' + plot.key).call(this.plots[plot.key]);
 			}
 		});
 	},
 
-	unnamed_series: 1,
-	plot_line: function (x, y, plot) {
-		var line = function (s) {
-			s.attr('d', d3.svg.line()
-				.x(function(d) { return x(d[0]); })
-				.y(function(d) { return y(d[plot.data_key]); })
-			);
-		};
-
-		this.plotContainer.selectAll('.line.' + plot.key)
-			.data([this.data.values])
-			.enter()
-			.append('path')
-				.attr('class', 'plot line ' + plot.key)
-				.attr('data-legend', plot.label || 'series ' + this.unnamed_series++);
-
-		this.svg.selectAll('.line.' + plot.key)
-			.transition().duration(200)
-			.call(line);
-
-		return line;
-	},
-
-	plot_scatter: function(x, y, plot) {
-		var scatter = this.plots[plot.key] = function (s) {
-			s.attr({
-				cx: function(d) { return x(d[0]); },
-				cy: function(d) { return y(d[plot.data_key]); }
-			});
-		};
-		var sel = this.plotContainer.selectAll('circle.' + plot.key).data(this.data.values);
-		sel.exit().remove();
-		sel.enter()
-			.append('circle')
-			.attr({
-				class: 'plot ' + plot.key,
-				r: 2
-			}).call(scatter);
-		return scatter;
-	},
-
-	plot_bar: function (x, y, plot) {
-		var key = plot.data_key;
-		var max = d3.max(this.data.values, function(d) { return d[key]; }) * 1.1;
-		y.domain([0, max]).nice();
-
-		if (max > 1000) {
-			this.axes.y.tickFormat(function (d) { return Math.round(d / 100) / 10; });
-			this.svg.selectAll('.y.axis > text').text('verbruik [m³]');
-		} else {
-			this.axes.y.tickFormat(function (d) { return d; });
-			this.svg.selectAll('.y.axis > text').text('verbruik [l]');
-		}
-		this.svg.selectAll('.axis.y').call(this.axes.y);
-
-		var readable_interval = this.meta.readable_interval;
-		var tip = d3tip().attr('class', 'bar-tooltip')
-			.offset([-10, 0])
-			.html(function(d) {
-				var amount = d[key];
-				if (amount > 1000) {
-					amount = Math.round(amount / 1000) + 'm³';
-				} else {
-					amount = amount + 'l';
-				}
-				return amount + ' / ' + readable_interval;
-			});
-		this.svg.call(tip);
-
-		var height = this.height();
-		var sliceWidth = this.width() / this.data.slices;
-
-		var bar = this.plots[plot.key] = function (s) {
-			s.attr({
-				x: function(d) { return x(d[0]); },
-				y: function() { return y(0); },
-				width: sliceWidth,
-				height: 0
-			}).transition().duration(100)
-			.attr({
-				height: function(d) { return height - y(d[key]); },
-				y: function(d) { return y(d[key]); }
-			});
-		};
-
-		var sel = this.plotContainer.selectAll('.water').data(this.data.values);
-
-		sel.exit().remove();
-		sel.enter().append('rect')
-			.attr('class', 'water')
-			.on({mouseover: tip.show, mouseout: tip.hide});
-
-		sel.call(bar);
-		return bar;
-	}
+	plot_line: require('./plot/line.js'),
+	plot_scatter: require('./plot/scatter.js'),
+	plot_bar: require('./plot/bar.js')
 });
 
 module.exports = Graph;

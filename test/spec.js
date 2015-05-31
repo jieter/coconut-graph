@@ -2,6 +2,7 @@
  describe:true it:true chai:true
   Graph:true
  */
+
 var data = {
 	'meta': {
 		'period': 'day',
@@ -25,9 +26,8 @@ var data = {
 	}
 };
 
-describe('cococonut-graph', function () {
+describe('coconut-graph', function () {
 	chai.should();
-
 
 	describe('Graph loader', function () {
 		var spy = chai.spy();
@@ -35,7 +35,7 @@ describe('cococonut-graph', function () {
 		var loader = new Graph.Loader(Graph.util.extend({}, data), {
 			graphs: [
 				{
-					container: 'container',
+					container: 'container1',
 					className: 'extra',
 					axes: {y: {includeZero: true}},
 					plot: {key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'}
@@ -43,7 +43,7 @@ describe('cococonut-graph', function () {
 			],
 			callback: spy
 		});
-		var container = document.getElementById('container');
+		var container = document.getElementById('container1');
 
 		it('adds classnames to graph container', function () {
 			container.className.should.contain('chart');
@@ -51,7 +51,7 @@ describe('cococonut-graph', function () {
 		});
 
 		it('preserves existing classnames on containers', function () {
-			container.className.should.contain('existing-class');
+			container.className.should.contain('container');
 		});
 
 		it('should call the callback', function () {
@@ -63,7 +63,7 @@ describe('cococonut-graph', function () {
 		});
 
 		it('should create multiple plots in one chart', function () {
-			var container = 'container';
+			var container = 'container2';
 			loader = new Graph.Loader(Graph.util.extend({}, data), {
 				graphs: [
 					{

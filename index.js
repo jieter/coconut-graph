@@ -6,7 +6,10 @@
 		util: require('./src/util.js')
 	};
 
-	module.exports = Graph;
+	if (typeof module === 'object' && module.exports) {
+		console.log('foo');
+		module.exports = Graph;
+	}
 	if (window) {
 		window.Graph = Graph;
 	}

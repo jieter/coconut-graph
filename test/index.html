@@ -8,9 +8,8 @@
 		#mocha {
 			clear: both;
 		}
-		#container {
-			height: 180px;
-			width: 1000px;
+		.container {
+			width: 100%;
 		}
 
 		.axis path, .axis line {
@@ -36,7 +35,8 @@
 	</style>
 </head>
 <body>
-	<div id="container" class="existing-class"></div>
+	<div id="container1" class="container"></div>
+	<div id="container2" class="container"></div>
 	<div id="mocha"></div>
 
 	<script src="../bundle.js"></script>
@@ -48,7 +48,6 @@
 	<script>
 		mocha.setup('bdd');
 	</script>
-
 	<script src="spec.js"></script>
 
 	<script>

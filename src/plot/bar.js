@@ -1,7 +1,6 @@
 var d3 = require('d3');
 var d3tip = require('d3-tip')(d3);
 
-
 var tip = function (amount_key, readable_interval) {
 	return d3tip().attr('class', 'bar-tooltip')
 		.offset([-10, 0])
@@ -32,10 +31,10 @@ module.exports = function (x, y, plot, graph) {
 
 	graph.svg.call(tip(key, graph.meta.readable_interval));
 
-	var height = this.height();
-	var sliceWidth = this.width() / this.data.slices;
+	var height = graph.height();
 
 	var bar = function (s) {
+		var sliceWidth = graph.width() / graph.data.slices;
 		s.attr({
 			x: function(d) { return x(d[0]); },
 			y: function() { return y(0); },
@@ -48,7 +47,7 @@ module.exports = function (x, y, plot, graph) {
 		});
 	};
 
-	var sel = graph.plotContainer.selectAll('.bar.' + plot.key).data(this.data.values);
+	var sel = graph.plotContainer.selectAll('.bar.' + plot.key).data(graph.data.values);
 
 	sel.exit().remove();
 	sel.enter().append('rect')

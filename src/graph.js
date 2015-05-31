@@ -52,11 +52,12 @@ var Graph = Class.extend({
 		});
 		Util.setOptions(this, options);
 
-		this._initAxes();
 		this._initContainer();
+		this._initAxes();
 
-		var self = this;
+		// Attach onresize listener
 		// namespace resize events to be able to attach multiple listeners
+		var self = this;
 		if (!Graph.onResizeCounter) { Graph.onResizeCounter = 0; }
 		d3.select(window).on('resize.' + (Graph.onResizeCounter++), function () {
 			self.onResize();
@@ -114,18 +115,8 @@ var Graph = Class.extend({
 				}
 			}
 		});
-	},
-	_initContainer: function () {
-		var container = d3.select(this.container);
 
-		container.classed('chart ' + (this.options.className || ''), true);
-
-		var svg = container.append('svg')
-			.attr({width: this.outerWidth(), height: this.outerHeight()})
-				.append('g')
-				.attr('transform', 'translate(' + this.margin('left') + ',' + this.margin('top') + ')');
-
-		this.plotContainer = svg.append('g');
+		var svg = this.svg;
 
 		// initialize the (double) x-axis
 		var height = this.height();
@@ -156,6 +147,18 @@ var Graph = Class.extend({
 				text.attr({y: 6, dy: '.71em'});
 			}
 		});
+	},
+	_initContainer: function () {
+		var container = d3.select(this.container);
+
+		container.classed('chart ' + (this.options.className || ''), true);
+
+		var svg = container.append('svg')
+			.attr({width: this.outerWidth(), height: this.outerHeight()})
+				.append('g')
+				.attr('transform', 'translate(' + this.margin('left') + ',' + this.margin('top') + ')');
+
+		this.plotContainer = svg.append('g');
 		this.svg = svg;
 	},
 
@@ -163,15 +166,13 @@ var Graph = Class.extend({
 		var svg = this.svg;
 		var width = this.width();
 
+		// x axis
+		this.scale.x.range([0, width]);
 		this.scale.x.domain(this.extents());
 
-		// call the right x-axis formatter for this period.
-		timeAxis[this.meta.period](this.axes, this.width());
 		svg.selectAll('.x.axis').call(this.axes.xticks);
 		svg.selectAll('.x.axis.labels').call(this.axes.xlabels);
 
-		// x axes
-		this.scale.x.range([0, width]);
 		timeAxis[this.meta.period](this.axes, this.width());
 
 		svg.select('.x.axis').call(this.axes.xticks);

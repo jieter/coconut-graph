@@ -20,6 +20,7 @@ module.exports = function (x, y, plot, graph) {
 	var max = d3.max(graph.data.values, function(d) { return d[key]; }) * 1.1;
 	y.domain([0, max]).nice();
 
+	// TODO: make sure it uses the right axis.
 	if (max > 1000) {
 		graph.axes.y.tickFormat(function (d) { return Math.round(d / 100) / 10; });
 		graph.svg.selectAll('.y.axis > text').text('verbruik [m³]');

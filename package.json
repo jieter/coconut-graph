@@ -6,8 +6,8 @@
   "scripts": {
     "test": "npm run bundle && npm run lint && npm run testsuite",
     "bundle": "browserify index.js -o bundle.js",
-    "watchify": "watchify index.js -o bundle.js",
-    "lint": "eslint src/ test/",
+    "watchify": "watchify index.js -d -o bundle.js",
+    "lint": "eslint index.js src/ test/",
     "testsuite": "mocha-phantomjs test/index.html",
     "release": "mversion patch -m"
   },

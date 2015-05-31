@@ -1,7 +1,6 @@
 var d3 = require('d3');
 require('./d3.nl_nl.js')(d3);
 
-
 module.exports = {
 	day: function (axes, width) {
 		var interval = width > 800 ? 1 :

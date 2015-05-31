@@ -29,6 +29,8 @@ var Graph = Class.extend({
 
 	initialize: function (options) {
 		this.container = document.getElementById(options.container);
+		// enable reuse of container;
+		d3.select(this.container).selectAll('svg').remove();
 
 		options.axes = Util.extend({}, this.options.axes, options.axes || {});
 
@@ -59,9 +61,15 @@ var Graph = Class.extend({
 		// namespace resize events to be able to attach multiple listeners
 		var self = this;
 		if (!Graph.onResizeCounter) { Graph.onResizeCounter = 0; }
-		d3.select(window).on('resize.' + (Graph.onResizeCounter++), function () {
+		this._resizeEvent = 'resize.' + (Graph.onResizeCounter++);
+		d3.select(window).on(this._resizeEvent, function () {
 			self.onResize();
 		});
+	},
+
+	remove: function () {
+		d3.select(window).on(this._resizeEvent, null);
+		d3.select(this.container).selectAll('svg').remove();
 	},
 
 	data_key: function (name) {

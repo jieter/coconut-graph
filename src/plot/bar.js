@@ -18,6 +18,7 @@ var tip = function (amount_key, readable_interval) {
 module.exports = function (x, y, plot, graph) {
 	var key = plot.data_key;
 	var max = d3.max(graph.data.values, function(d) { return d[key]; }) * 1.1;
+
 	y.domain([0, max]).nice();
 
 	// TODO: make sure it uses the right axis.

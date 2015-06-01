@@ -31,6 +31,7 @@
     "chai": "^2.3.0",
     "chai-spies": "^0.6.0",
     "eslint": "^0.21.2",
+    "exorcist": "^0.4.0",
     "mocha": "^2.2.5",
     "mocha-phantomjs": "^3.5.3",
     "mversion": "^1.10.0",

@@ -11,25 +11,22 @@ var tip = function (amount_key, readable_interval) {
 			} else {
 				amount = amount + 'l';
 			}
-			return amount + ' / ' + readable_interval;
+			return amount + (readable_interval ? ' / ' + readable_interval : '');
 		});
 };
 
 module.exports = function (x, y, plot, graph) {
 	var key = plot.data_key;
-	var max = d3.max(graph.data.values, function(d) { return d[key]; }) * 1.1;
+	var yaxis = graph.axes.y;
 
+	var max = d3.max(graph.data.values, function(d) { return d[key]; }) * 1.1;
 	y.domain([0, max]).nice();
 
-	// TODO: make sure it uses the right axis.
-	if (max > 1000) {
-		graph.axes.y.tickFormat(function (d) { return Math.round(d / 100) / 10; });
-		graph.svg.selectAll('.y.axis > text').text('verbruik [m³]');
-	} else {
-		graph.axes.y.tickFormat(function (d) { return d; });
-		graph.svg.selectAll('.y.axis > text').text('verbruik [l]');
-	}
-	graph.svg.selectAll('.axis.y').call(graph.axes.y);
+	// scale axis if above 1000l
+	// TODO: move out of plot_bar.
+	yaxis.options.tickFormat = function (d) { return (max > 1000) ? (Math.round(d / 100) / 10) : d; };
+	yaxis.options.label = 'verbruik ' + ((max > 1000) ? '[m³]' : '[l]');
+	yaxis.update();
 
 	graph.svg.call(tip(key, graph.meta.readable_interval));
 

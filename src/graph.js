@@ -1,11 +1,12 @@
 var Class = require('./class.js');
+var extend = require('extend');
 var Util = require('./util.js');
 
 var d3 = require('d3');
-
 var d3legend = require('d3-legend')(d3);
 
-var timeAxis = require('./time-xaxis.js');
+var xaxis = require('./time-xaxis.js');
+var yaxis = require('./yaxis.js');
 
 var Graph = Class.extend({
 	options: {
@@ -17,6 +18,7 @@ var Graph = Class.extend({
 		height: 260,
 
 		axes: {
+			x: {},
 			y: {orient: 'left'}
 		}
 	},
@@ -32,7 +34,7 @@ var Graph = Class.extend({
 		// enable reuse of container;
 		d3.select(this.container).selectAll('svg').remove();
 
-		options.axes = Util.extend({}, this.options.axes, options.axes || {});
+		options.axes = extend({}, this.options.axes, options.axes || {});
 
 		if (options.plot) {
 			options.plots = [options.plot];
@@ -42,7 +44,7 @@ var Graph = Class.extend({
 				plot.type = 'line';
 			}
 			if (!('key' in plot)) {
-				throw 'key must be suplied.';
+				throw 'key must be supplied.';
 			}
 			if (!('axis' in plot)) {
 				plot.axis = 'y';
@@ -91,8 +93,8 @@ var Graph = Class.extend({
 	},
 
 	eachAxis: function (callback) {
-		for (var name in this.options.axes) {
-			callback.call(this, name, this.options.axes[name]);
+		for (var name in this.axes) {
+			callback.call(this, name, this.axes[name]);
 		}
 	},
 	eachPlot: function (callback) {
@@ -102,60 +104,16 @@ var Graph = Class.extend({
 	},
 
 	_initAxes: function () {
-		var scale = this.scale = {
-			x: d3.time.scale().range([0, this.width()])
-		};
+		var axes = this.axes = {};
 
-		var axes = this.axes = {
-			xticks: d3.svg.axis().scale(this.scale.x).orient('bottom').tickFormat(''),
-			xlabels: d3.svg.axis().scale(this.scale.x).orient('bottom').tickSize(0).tickPadding(7)
-		};
+		for (var name in this.options.axes) {
+			var options = extend({name: name}, this.options.axes[name]);
 
-		this.eachAxis(function (name, axis) {
-			scale[name] = d3.scale.linear().rangeRound([this.height(), 0]);
-			axes[name] = d3.svg.axis().scale(scale[name]).orient(axis.orient || 'left');
-
-			if ('tickFormat' in axis) {
-				if (typeof axis.tickFormat === 'string') {
-					axes[name].tickFormat(d3.format(axis.tickFormat));
-				} else {
-					axes[name].tickFormat(axis.tickFormat);
-				}
-			}
-		});
-
-		var svg = this.svg;
-
-		// initialize the (double) x-axis
-		var height = this.height();
-		[
-			{axis: this.axes.xticks},
-			{axis: this.axes.xlabels, class: 'labels'}
-		].forEach(function(axis) {
-			svg.append('g').attr({
-				class: 'x axis ' + (axis.class || ''),
-				transform: 'translate(0, ' + height + ')'
-			});
-		});
-
-		// initialize the y axes
-		this.eachAxis(function (name, axis) {
-			var el = svg.append('g').attr('class', 'axis ' + name);
-
-			var text = el.append('text')
-				.attr({
-					class: 'axislabel',
-					transform: 'rotate(-90)'
-				}).text(axis.label || this.options.ylabel);
-
-			if (axis.orient && axis.orient === 'right') {
-				text.attr('dy', '-.5em');
-				el.attr('translate( ' + (this.width()) + ', 0)');
-			} else {
-				text.attr({y: 6, dy: '.71em'});
-			}
-		});
+			axes[name] = (name === 'x' ? xaxis : yaxis)(this, options);
+			axes[name].render();
+		}
 	},
+
 	_initContainer: function () {
 		var container = d3.select(this.container);
 
@@ -171,31 +129,8 @@ var Graph = Class.extend({
 	},
 
 	_updateAxes: function () {
-		var svg = this.svg;
-		var width = this.width();
-
-		// x axis
-		this.scale.x.range([0, width]);
-		this.scale.x.domain(this.extents());
-
-		svg.selectAll('.x.axis').call(this.axes.xticks);
-		svg.selectAll('.x.axis.labels').call(this.axes.xlabels);
-
-		timeAxis[this.meta.period](this.axes, this.width());
-
-		svg.select('.x.axis').call(this.axes.xticks);
-		svg.select('.x.axis.labels').call(this.axes.xlabels);
-
-		var axes = this.axes;
 		this.eachAxis(function (name, axis) {
-			if (axis.ticks) {
-				axes[name].ticks(axis.ticks);
-			}
-			// right oriented y axes
-			var ax = svg.selectAll('.axis.' + name).call(axes[name]);
-			if (axis.orient && axis.orient === 'right') {
-				ax.attr('transform', 'translate(' + width + ', 0)');
-			}
+			axis.update();
 		});
 	},
 
@@ -203,10 +138,8 @@ var Graph = Class.extend({
 	render: function (callback) {
 		this._updateAxes();
 
-		var xscale = this.scale.x;
+		var xscale = this.axes.x.scale;
 		this.plots = {};
-
-		// var yaxis_extents = {};
 
 		this.eachPlot(function(plot) {
 			plot.data_key = this.data_key(plot.key);
@@ -228,12 +161,11 @@ var Graph = Class.extend({
 				extent = d3.extent(extent);
 			}
 			// update the extent for this scale.
-			this.scale[plot.axis].domain(extent).nice();
-
-			this.svg.selectAll('.axis.' + plot.axis).call(this.axes[plot.axis]);
+			var yscale = this.axes[plot.axis].domain(extent);
+			this.axes[plot.axis].update();
 
 			// Do the actual plotting
-			this.plots[plot.key] = this['plot_' + plot.type](xscale, this.scale[plot.axis], plot, this);
+			this.plots[plot.key] = this['plot_' + plot.type](xscale, yscale, plot, this);
 		});
 
 		if (this.firstRender && this.options.show_legend) {

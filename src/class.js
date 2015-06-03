@@ -9,7 +9,7 @@
 var L = window.L = {};
 L.Util = require('./util.js');
 
-L.extend = L.Util.extend;
+var extend = require('extend');
 L.setOptions = L.Util.setOptions;
 
 /*
@@ -53,23 +53,23 @@ L.Class.extend = function (props) {
 
 	// mix static properties into the class
 	if (props.statics) {
-		L.extend(NewClass, props.statics);
+		extend(NewClass, props.statics);
 		delete props.statics;
 	}
 
 	// mix includes into the prototype
 	if (props.includes) {
-		L.Util.extend.apply(null, [proto].concat(props.includes));
+		extend.apply(null, [proto].concat(props.includes));
 		delete props.includes;
 	}
 
 	// merge options
 	if (props.options && proto.options) {
-		props.options = L.extend({}, proto.options, props.options);
+		props.options = extend({}, proto.options, props.options);
 	}
 
 	// mix given properties into the prototype
-	L.extend(proto, props);
+	extend(proto, props);
 
 	proto._initHooks = [];
 
@@ -99,12 +99,12 @@ L.Class.extend = function (props) {
 
 // method for adding properties to prototype
 L.Class.include = function (props) {
-	L.extend(this.prototype, props);
+	extend(this.prototype, props);
 };
 
 // merge new default options to the Class
 L.Class.mergeOptions = function (options) {
-	L.extend(this.prototype.options, options);
+	extend(this.prototype.options, options);
 };
 
 // add a constructor hook

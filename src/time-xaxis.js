@@ -82,15 +82,11 @@ module.exports = function (graph, options) {
 			});
 		});
 	};
-	Axis.domain = function (extent) {
-		(function () {
 
-		})(extent);
-	};
-	Axis.update = function () {
+	Axis.update = function (extent) {
 		var svg = graph.svg;
 		scale.range([0, graph.width()]);
-		scale.domain(graph.extents());
+		scale.domain(extent || graph.extents());
 
 		formatters[graph.meta.period](xticks, xlabels, graph.width());
 

@@ -161,8 +161,8 @@ var Graph = Class.extend({
 				extent = d3.extent(extent);
 			}
 			// update the extent for this scale.
-			var yscale = this.axes[plot.axis].domain(extent);
-			this.axes[plot.axis].update();
+			var yscale = this.axes[plot.axis].scale;
+			this.axes[plot.axis].update(extent);
 
 			// Do the actual plotting
 			this.plots[plot.key] = this['plot_' + plot.type](xscale, yscale, plot, this);

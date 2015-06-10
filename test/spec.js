@@ -3,32 +3,9 @@
   it:true
   chai:true
   d3: true
-  Graph:true
+  Graph:true,
+  data:true
  */
-
-var data = {
-	'meta': {
-		'period': 'day',
-		'urls': {
-			'next': '<url to get json for the next day>',
-			'previous': '<url to get json for previous day>'
-		},
-		'readable_interval': '15 minuten'
-	},
-	'data': {
-		'keys': ['timestamp', 'amount', 'test', 'foo'],
-		'extents': ['2015-05-29T00:00:00', '2015-05-29T23:59:59'],
-		'values': [
-			['2015-05-29T00:00:00', 0, 1, 7],
-			['2015-05-29T14:00:00', 10, 2, 5],
-			['2015-05-29T14:15:00', 0, 3, 7],
-			['2015-05-29T14:30:00', 5, 4, 7],
-			['2015-05-29T14:45:00', 4, 5, 7],
-			['2015-05-29T15:00:00', 6, 5, 7]
-		],
-		'slices': 96
-	}
-};
 
 (function disableD3animations() {
 	// add a duration function to the selection prototype
@@ -43,21 +20,21 @@ var c = document.getElementById(container);
 describe('coconut-graph', function () {
 	chai.should();
 
+	var spy = chai.spy();
+
+	var loader = new Graph.Loader(Graph.util.extend({}, data[0]), {
+		graphs: [
+			{
+				container: container,
+				className: 'extra',
+				axes: {y: {includeZero: true}},
+				plot: {key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'}
+			}
+		],
+		callback: spy
+	});
+
 	describe('Graph loader', function () {
-		var spy = chai.spy();
-
-		var loader = new Graph.Loader(Graph.util.extend({}, data), {
-			graphs: [
-				{
-					container: container,
-					className: 'extra',
-					axes: {y: {includeZero: true}},
-					plot: {key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'}
-				}
-			],
-			callback: spy
-		});
-
 		it('adds classnames to graph container', function () {
 			c.className.should.contain('chart');
 			c.className.should.contain('extra');
@@ -79,8 +56,8 @@ describe('coconut-graph', function () {
 			loader.graphs[container].remove();
 		});
 
-		it('should create multiple plots in one chart', function () {
-			loader = new Graph.Loader(Graph.util.extend({}, data), {
+		it('Update graph', function () {
+			loader = new Graph.Loader(Graph.util.extend({}, data[0]), {
 				graphs: [
 					{
 						container: container,
@@ -100,7 +77,9 @@ describe('coconut-graph', function () {
 			loader.graphs.should.contains.key(container);
 
 			// var graph = loader.graphs[container];
-			// graph.plots.should.have.keys('amount', 'test', 'foo');
+			loader.graphs[container].options.plots.forEach(function (plot) {
+				plot.should.contain.key('fn');
+			});
 		});
 	});
 
@@ -117,5 +96,13 @@ describe('coconut-graph', function () {
 			nonzero[0].length.should.equal(4);
 		});
 
+	});
+
+	describe('updating graph', function () {
+		it('Updates line graphs', function () {
+			var path = d3.select('.series-test').attr('d');
+			loader.load_json(data[1]);
+			path.should.not.equal(d3.select('.series-test').attr('d'));
+		});
 	});
 });

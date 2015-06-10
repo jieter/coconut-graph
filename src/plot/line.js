@@ -21,7 +21,7 @@ module.exports = function (x, y, plot, graph) {
 		});
 	selection.exit().remove();
 
-	selection.call(line);
+	selection.transition().duration(200).call(line);
 
 	return line;
 };

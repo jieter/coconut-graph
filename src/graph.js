@@ -136,10 +136,6 @@ var Graph = Class.extend({
 
 	firstRender: true,
 	render: function (callback) {
-		this._updateAxes();
-
-		var xscale = this.axes.x.scale;
-		this.plots = {};
 
 		this.eachPlot(function(plot) {
 			plot.data_key = this.data_key(plot.key);
@@ -152,7 +148,6 @@ var Graph = Class.extend({
 				return;
 			} else {
 				d3.select(this.container).style('display', 'block');
-				this._updateAxes();
 			}
 
 			// Include zero in the scale if not already.
@@ -160,12 +155,15 @@ var Graph = Class.extend({
 				extent.push(0);
 				extent = d3.extent(extent);
 			}
-			// update the extent for this scale.
-			var yscale = this.axes[plot.axis].scale;
-			this.axes[plot.axis].update(extent);
+			this.axes[plot.axis].domain(extent);
+		});
 
-			// Do the actual plotting
-			this.plots[plot.key] = this['plot_' + plot.type](xscale, yscale, plot, this);
+		this._updateAxes();
+
+		var xscale = this.axes.x.scale;
+		this.eachPlot(function (plot) {
+			var plot_fn = this['plot_' + plot.type];
+			plot.fn = plot_fn(xscale, this.axes[plot.axis].scale, plot, this);
 		});
 
 		if (this.firstRender && this.options.show_legend) {
@@ -199,11 +197,7 @@ var Graph = Class.extend({
 		this._updateAxes();
 
 		this.eachPlot(function (plot) {
-			if (plot.type === 'bar') {
-				this.svg.selectAll('.bar.' + plot.key).call(this.plots[plot.key]);
-			} else {
-				this.svg.selectAll('.plot.' + plot.key).call(this.plots[plot.key]);
-			}
+			this.svg.selectAll('.plot.series-' + plot.key).call(plot.fn);
 		});
 	},
 

@@ -46,11 +46,11 @@ module.exports = function (x, y, plot, graph) {
 		});
 	};
 
-	var sel = graph.plotContainer.selectAll('.bar.' + plot.key).data(graph.data.values);
+	var sel = graph.plotContainer.selectAll('.plot.series-' + plot.key).data(graph.data.values);
 
 	sel.exit().remove();
 	sel.enter().append('rect')
-		.attr('class', 'bar ' + plot.key)
+		.attr('class', 'plot plot-bar series-' + plot.key)
 		.on({mouseover: tip.show, mouseout: tip.hide});
 
 	sel.call(bar);

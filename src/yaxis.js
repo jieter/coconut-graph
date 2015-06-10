@@ -45,7 +45,9 @@ module.exports = function (graph, options) {
 			text.attr({y: 6, dy: '.71em'});
 		}
 	};
-
+	Axis.domain = function (extent) {
+		return scale.domain(extent).nice();
+	};
 	Axis.update = function (extent) {
 		if (extent) {
 			scale.domain(extent).nice();

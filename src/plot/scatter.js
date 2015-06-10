@@ -5,12 +5,12 @@ module.exports = function(x, y, plot, graph) {
 			cy: function(d) { return y(d[plot.data_key]); }
 		});
 	};
-	var sel = graph.plotContainer.selectAll('circle.' + plot.key).data(graph.data.values);
+	var sel = graph.plotContainer.selectAll('circle.series-' + plot.key).data(graph.data.values);
 	sel.exit().remove();
 	sel.enter()
 		.append('circle')
 		.attr({
-			class: 'plot ' + plot.key,
+			class: 'plot series-' + plot.key,
 			r: 2
 		}).call(scatter);
 

@@ -4,23 +4,26 @@ var unnamed_series = 1;
 
 module.exports = function (x, y, plot, graph) {
 
-	var line = function (s) {
-		s.attr('d', d3.svg.line()
-			.x(function(d) { return x(d[0]); })
-			.y(function(d) { return y(d[plot.data_key]); })
-		);
+	var line = d3.svg.line()
+		.x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(d[plot.data_key]); });
+
+	var line_plot = function (sel) {
+		sel.attr('d', line);
 	};
 
-	graph.plotContainer.selectAll('.line.' + plot.key)
-		.data([graph.data.values])
-		.enter()
-		.append('path')
-			.attr('class', 'plot line ' + plot.key)
-			.attr('data-legend', plot.label || 'series ' + unnamed_series++);
+	var selection = graph.plotContainer
+		.selectAll('.series-' + plot.key)
+		.data([graph.data.values]);
 
-	graph.svg.selectAll('.line.' + plot.key)
-		.transition().duration(200)
-		.call(line);
+	selection.enter().append('path')
+		.attr({
+			class: 'plot plot-line series-' + plot.key,
+			'data-legend': plot.label || 'series ' + unnamed_series++
+		})
+		.call(line_plot);
 
-	return line;
+	selection.exit().remove();
+
+	return line_plot;
 };

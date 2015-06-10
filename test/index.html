@@ -32,6 +32,39 @@
 			fill: steelblue;
 			stroke: steelblue;
 		}
+		rect.plot-bar:hover {
+			fill: red;
+			stroke: red;
+		}
+
+		.bar-tooltip {
+			line-height: 1;
+			font-weight: bold;
+			padding: 12px;
+			background: steelblue;
+			color: #fff;
+			border-radius: 2px;
+
+			/* Creates a small triangle extender for the tooltip */
+			&:after {
+				box-sizing: border-box;
+				display: inline;
+				font-size: 10px;
+				width: 100%;
+				line-height: 1;
+				color: steelblue;
+				content: "\25BC";
+				position: absolute;
+				text-align: center;
+			}
+
+			/* Style northward tooltips differently */
+			&.n:after {
+				margin: -1px 0 0 0;
+				top: 100%;
+				left: 0;
+			}
+		}
 	</style>
 </head>
 <body>

@@ -1,10 +1,11 @@
 var d3 = require('d3');
 var d3tip = require('d3-tip')(d3);
 
-var tip = function (amount_key, readable_interval) {
-	return d3tip().attr('class', 'bar-tooltip')
-		.offset([-10, 0])
-		.html(function(d) {
+
+var tip_elem = d3tip().attr('class', 'bar-tooltip').offset([-10, 0]);
+
+var create_tip = function (amount_key, readable_interval) {
+	return tip_elem.html(function(d) {
 			var amount = d[amount_key];
 			if (amount > 1000) {
 				amount = Math.round(amount / 1000) + 'm³';
@@ -28,7 +29,8 @@ module.exports = function (x, y, plot, graph) {
 	yaxis.options.label = 'verbruik ' + ((max > 1000) ? '[m³]' : '[l]');
 	yaxis.update();
 
-	graph.svg.call(tip(key, graph.meta.readable_interval));
+	var tip = create_tip(key, graph.meta.readable_interval);
+	graph.svg.call(tip);
 
 	var height = graph.height();
 
@@ -46,8 +48,8 @@ module.exports = function (x, y, plot, graph) {
 		});
 	};
 
-	var sel = graph.plotContainer.selectAll('.plot.series-' + plot.key).data(graph.data.values);
 
+	var sel = graph.plotContainer.selectAll('.plot.series-' + plot.key).data(graph.data.values);
 	sel.exit().remove();
 	sel.enter().append('rect')
 		.attr('class', 'plot plot-bar series-' + plot.key)

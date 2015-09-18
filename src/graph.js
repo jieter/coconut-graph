@@ -138,12 +138,12 @@ var Graph = Class.extend({
 	render: function (callback) {
 
 		this.eachPlot(function(plot) {
-			if (typeof plot.key == 'function') {
+			if (typeof plot.key === 'function') {
 				plot.data_function = plot.key;
 				plot.key = 'composed';
 			} else {
 				plot.data_key = this.data_key(plot.key);
-				plot.data_function = function(d) { return d[plot.data_key]; }
+				plot.data_function = function(d) { return d[plot.data_key]; };
 			}
 
 			var extent = d3.extent(this.data.values, plot.data_function);

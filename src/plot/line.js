@@ -6,7 +6,8 @@ module.exports = function (x, y, plot, graph) {
 	var line = function (sel) {
 		sel.attr('d', d3.svg.line()
 			.x(function(d) { return x(d[0]); })
-			.y(function(d) { return y(d[plot.data_key]); }));
+			.y(function(d) {
+				return y(plot.data_function(d)); }));
 	};
 
 	var selection = graph.plotContainer

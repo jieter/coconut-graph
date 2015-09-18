@@ -138,9 +138,15 @@ var Graph = Class.extend({
 	render: function (callback) {
 
 		this.eachPlot(function(plot) {
-			plot.data_key = this.data_key(plot.key);
+			if (typeof plot.key == 'function') {
+				plot.data_function = plot.key;
+				plot.key = 'composed';
+			} else {
+				plot.data_key = this.data_key(plot.key);
+				plot.data_function = function(d) { return d[plot.data_key]; }
+			}
 
-			var extent = d3.extent(this.data.values, function(d) { return d[plot.data_key]; });
+			var extent = d3.extent(this.data.values, plot.data_function);
 
 			// hide or unhide plots
 			if (plot.hideIfEmpty && (this.data.values.length === 0 || (extent[0] < 0 && extent[1] < 0))) {
@@ -162,8 +168,8 @@ var Graph = Class.extend({
 
 		var xscale = this.axes.x.scale;
 		this.eachPlot(function (plot) {
-			var plot_fn = this['plot_' + plot.type];
-			plot.fn = plot_fn(xscale, this.axes[plot.axis].scale, plot, this);
+			var plot_function = this['plot_' + plot.type];
+			plot.fn = plot_function(xscale, this.axes[plot.axis].scale, plot, this);
 		});
 
 		if (this.firstRender && this.options.show_legend) {

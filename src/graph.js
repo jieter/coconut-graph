@@ -43,10 +43,10 @@ var Graph = Class.extend({
 			if (!plot.type) {
 				plot.type = 'line';
 			}
-			if (!('key' in plot)) {
+			if (!plot.key) {
 				throw 'key must be supplied.';
 			}
-			if (!('axis' in plot)) {
+			if (!plot.axis) {
 				plot.axis = 'y';
 			}
 
@@ -138,7 +138,7 @@ var Graph = Class.extend({
 	render: function (callback) {
 		if (this.firstRender) {
 			this.eachPlot(function (plot) {
-				if (typeof plot.key == 'function') {
+				if (typeof plot.key === 'function') {
 					plot.data_function = plot.key;
 					plot.key = 'composed';
 				} else {

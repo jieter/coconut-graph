@@ -29,7 +29,7 @@ module.exports = Class.extend({
 		d3.json(url, function(error, response) {
 			// TODO: handle error here.
 			if (error) {
-				console.log(error);
+				throw error;
 			}
 
 			self.load_json(response, callback);

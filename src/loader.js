@@ -28,6 +28,9 @@ module.exports = Class.extend({
 		// TODO: add spinner
 		d3.json(url, function(error, response) {
 			// TODO: handle error here.
+			if (error) {
+				console.log(error);
+			}
 
 			self.load_json(response, callback);
 		});

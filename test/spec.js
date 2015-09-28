@@ -27,24 +27,37 @@
 var container = 'container';
 var c = document.getElementById(container);
 
-describe('coconut-graph', function () {
-	chai.should();
-
-	var spy = chai.spy();
-
-	var loader = new Graph.Loader(Graph.util.extend({}, data[0]), {
+function get_graph(callback) {
+	return new Graph.Loader(Graph.util.extend({}, data[0]), {
 		graphs: [
 			{
 				container: container,
 				className: 'extra',
-				axes: {y: {includeZero: true}},
-				plot: {key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'}
+				axes: {
+					y: {includeZero: true, guides: true},
+					y1: {includeZero: true, orient: 'right'}
+				},
+				plots: [
+					{key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'},
+					{key: 'test', axis: 'y1', label: 'test', type: 'line'},
+					{key: 'foo', axis: 'y1', label: 'foo', type: 'scatter'},
+					{key: function (d) {
+						return d[2] - d[1];
+					}, axis: 'y', label: 'Composed'}
+				]
 			}
 		],
-		callback: spy
+		callback: callback
 	});
+}
+
+describe('coconut-graph', function () {
+	chai.should();
 
 	describe('Graph loader', function () {
+		var spy = chai.spy();
+		var loader = get_graph(spy);
+
 		it('adds classnames to graph container', function () {
 			c.className.should.contain('chart');
 			c.className.should.contain('extra');
@@ -67,26 +80,7 @@ describe('coconut-graph', function () {
 		});
 
 		it('Update graph', function () {
-			loader = new Graph.Loader(Graph.util.extend({}, data[0]), {
-				graphs: [
-					{
-						container: container,
-						margin_right: 40,
-						axes: {
-							y: {includeZero: true},
-							y1: {includeZero: true, orient: 'right'}
-						},
-						plots: [
-							{key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'},
-							{key: 'test', axis: 'y1', label: 'test', type: 'line'},
-							{key: 'foo', axis: 'y1', label: 'foo', type: 'scatter'},
-							{key: function (d) {
-								return d[2] - d[1];
-							}, axis: 'y', label: 'Composed'}
-						]
-					}
-				]
-			});
+			loader = get_graph();
 			loader.graphs.should.contains.key(container);
 
 			// var graph = loader.graphs[container];
@@ -97,6 +91,7 @@ describe('coconut-graph', function () {
 	});
 
 	describe('bar plot', function () {
+		var loader = get_graph();
 		it('it should draw 6 bars', function () {
 			d3.select(c).selectAll('rect')[0].length.should.equal(6);
 		});
@@ -111,18 +106,20 @@ describe('coconut-graph', function () {
 	});
 
 	describe('scatter plot', function () {
+		var loader = get_graph();
+
 		it('should draw 6 circles', function () {
 			d3.select(c).selectAll('circle.series-foo')[0].length.should.equal(6);
 		});
 	});
 
 	describe('updating graph', function () {
+
 		var get_path = function (selector) {
 			return d3.select(selector).attr('d');
 		};
 		var test_update = function (selector) {
-			// initial state
-			loader.load_json(data[0]);
+			var loader = get_graph();
 
 			var path = get_path(selector);
 			path.should.not.contain('NaN');

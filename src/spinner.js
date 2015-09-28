@@ -9,7 +9,6 @@ module.exports = function spinner(container, options) {
 	}, options);
 
 	var radius = Math.min(options.width, options.height) / 4;
-	var tau = 2 * Math.PI;
 	var arc = d3.svg.arc()
 		.innerRadius(radius * 0.5)
 		.outerRadius(radius * 0.52)
@@ -23,6 +22,7 @@ module.exports = function spinner(container, options) {
 			transform: 'translate(' + options.width / 2 + ',' + options.height / 2 + ')'
 		});
 
+	var timeout;
 	var Spin = function () {
 		function spin(selection, duration) {
 			selection.transition()
@@ -32,10 +32,10 @@ module.exports = function spinner(container, options) {
 					return d3.interpolateString('rotate(0)', 'rotate(360)');
 				});
 
-			setTimeout(function() { spin(selection, duration); }, duration);
+			timeout = setTimeout(function() { spin(selection, duration); }, duration);
 		}
 		g.append('path')
-			.datum({endAngle: 0.33 * tau})
+			.datum({endAngle: 0.33 * 2 * Math.PI})
 			.style('fill', options.color)
 			.attr('class', 'foo')
 			.attr('d', arc)
@@ -46,7 +46,8 @@ module.exports = function spinner(container, options) {
 
 	Spin.remove = function () {
 		g.remove();
-	}
+		clearTimeout(timeout);
+	};
 
 	return Spin;
-}
+};

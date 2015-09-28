@@ -11,7 +11,17 @@
 	// add a duration function to the selection prototype
 	d3.selection.prototype.duration = function() { return this; };
 	// hack the transition function of d3's select API
-	d3.selection.prototype.transition = function() { return this; };
+	// this is very ugly and only works for the order of chaining used in spinner.js
+	d3.selection.prototype.transition = function () {
+		this.ease = function () {
+			this.duration = function () {
+				this.attrTween = function () { return this; };
+				return this;
+			};
+			return this;
+		};
+		return this;
+	};
 })();
 
 var container = 'container';

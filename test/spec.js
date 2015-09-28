@@ -79,7 +79,10 @@ describe('coconut-graph', function () {
 						plots: [
 							{key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'},
 							{key: 'test', axis: 'y1', label: 'test', type: 'line'},
-							{key: 'foo', axis: 'y1', label: 'foo', type: 'scatter'}
+							{key: 'foo', axis: 'y1', label: 'foo', type: 'scatter'},
+							{key: function (d) {
+								return d[2] - d[1];
+							}, axis: 'y', label: 'Composed'}
 						]
 					}
 				]
@@ -93,7 +96,7 @@ describe('coconut-graph', function () {
 		});
 	});
 
-	describe('bar graph', function () {
+	describe('bar plot', function () {
 		it('it should draw 6 bars', function () {
 			d3.select(c).selectAll('rect')[0].length.should.equal(6);
 		});
@@ -105,14 +108,38 @@ describe('coconut-graph', function () {
 
 			nonzero[0].length.should.equal(4);
 		});
+	});
 
+	describe('scatter plot', function () {
+		it('should draw 6 circles', function () {
+			d3.select(c).selectAll('circle.series-foo')[0].length.should.equal(6);
+		});
 	});
 
 	describe('updating graph', function () {
-		it('Updates line graphs', function () {
-			var path = d3.select('.series-test').attr('d');
+		var get_path = function (selector) {
+			return d3.select(selector).attr('d');
+		};
+		var test_update = function (selector) {
+			// initial state
+			loader.load_json(data[0]);
+
+			var path = get_path(selector);
+			path.should.not.contain('NaN');
+
+			// update
 			loader.load_json(data[1]);
-			path.should.not.equal(d3.select('.series-test').attr('d'));
+
+			var new_path = get_path(selector);
+			new_path.should.not.equal(path);
+			new_path.should.not.contain('NaN');
+		};
+
+		it('Updates normal line graphs', function () {
+			test_update('.series-test');
+		});
+		it('Updates composed line graphs', function () {
+			test_update('.series-composed');
 		});
 	});
 });

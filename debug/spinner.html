@@ -1,0 +1,36 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>coconut-graph basic example</title>
+	<link rel="stylesheet" href="../test/style.css" />
+</head>
+<body>
+	<h2>Should show a spinner for 3 seconds and then some data</h2>
+	<div id="graph" class="container"></div>
+	<script src="../bundle.js"></script>
+
+	<script src="../test/data.js"></script>
+
+	<script>
+		var graph = new Graph.Graph({
+			container: 'graph',
+			margin_right: 40,
+			axes: {
+				y: {includeZero: true},
+				y1: {includeZero: true, orient: 'right'}
+			},
+			plots: [
+				{key: 'amount', axis: 'y', label: 'verbruik [l]', type: 'bar'},
+				{key: 'test', axis: 'y1', label: 'test', type: 'line'},
+				{key: 'foo', axis: 'y1', label: 'foo', type: 'scatter'}
+			]
+		});
+		data = data[0];
+
+		setTimeout(function () {
+			graph.meta = data.meta;
+			graph.data = Graph.normalize(data.data);
+			graph.render();
+		}, 3000);
+	</script>
+</body

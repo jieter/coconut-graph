@@ -4,6 +4,7 @@ var Util = require('./util.js');
 var d3 = require('d3');
 
 var Graph = require('./graph.js');
+var normalize = require('./normalize.js');
 
 module.exports = Class.extend({
 	initialize: function (url, options) {
@@ -20,6 +21,7 @@ module.exports = Class.extend({
 			this.load(url);
 		}
 	},
+
 
 	load: function (url, callback) {
 		var self = this;
@@ -47,7 +49,7 @@ module.exports = Class.extend({
 		callback = (callback !== undefined) ? callback : this.options.callback;
 
 		this.meta = response.meta;
-		response.data = this.normalize(response.data);
+		response.data = normalize(response.data);
 
 		this.eachGraph(function (graph, key) {
 			graph.meta = response.meta;
@@ -65,20 +67,6 @@ module.exports = Class.extend({
 		}
 	},
 
-	normalize: function (data) {
-		if (data.extents) {
-			data.extents = data.extents.map(Graph.parseDatetime);
-		}
-
-		var timestamp_idx = data.keys.indexOf('timestamp');
-		if (timestamp_idx !== -1) {
-			data.values.forEach(function (it, i) {
-				data.values[i][timestamp_idx] = Graph.parseDatetime(it[timestamp_idx]);
-			}, this);
-		}
-
-		return data;
-	},
 	onResize: function () {
 		this.eachGraph(function (graph) {
 			graph.onResize();

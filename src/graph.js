@@ -8,6 +8,8 @@ var d3legend = require('d3-legend')(d3);
 var xaxis = require('./time-xaxis.js');
 var yaxis = require('./yaxis.js');
 
+var spinner = require('./spinner.js');
+
 var Graph = Class.extend({
 	options: {
 		margin_top: 20,
@@ -16,16 +18,11 @@ var Graph = Class.extend({
 		margin_right: 5,
 
 		height: 260,
+		spinner: true,
 
 		axes: {
 			x: {},
 			y: {orient: 'left'}
-		}
-	},
-	statics: {
-		parseDatetime: function (s) {
-			return (typeof s === 'string') ?
-				d3.time.format('%Y-%m-%dT%H:%M:%S').parse(s) : s;
 		}
 	},
 
@@ -58,6 +55,11 @@ var Graph = Class.extend({
 
 		this._initContainer();
 		this._initAxes();
+		this.spinner = spinner(this.container, {
+			height: this.options.height,
+			width: this.width()
+		});
+		this.spinner();
 
 		// Attach onresize listener
 		// namespace resize events to be able to attach multiple listeners
@@ -124,7 +126,7 @@ var Graph = Class.extend({
 				.append('g')
 				.attr('transform', 'translate(' + this.margin('left') + ',' + this.margin('top') + ')');
 
-		this.plotContainer = svg.append('g');
+		this.plotContainer = svg.append('g'); //.attr('plots');
 		this.svg = svg;
 	},
 
@@ -181,6 +183,7 @@ var Graph = Class.extend({
 		if (callback) {
 			callback(this, this.data, this.meta);
 		}
+		this.spinner.remove();
 		this.firstRender = false;
 	},
 

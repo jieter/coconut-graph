@@ -77,7 +77,7 @@ module.exports = function (graph, options) {
 			{axis: xlabels, class: 'labels'}
 		].forEach(function(axis) {
 			graph.svg.append('g').attr({
-				class: 'x axis ' + (axis.class || ''),
+				class: 'axis x ' + (axis.class || ''),
 				transform: 'translate(0, ' + height + ')'
 			});
 		});

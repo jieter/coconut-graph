@@ -1,13 +1,15 @@
 var d3 = require('d3');
 var extend = require('extend');
 
+var defaultOptions = {
+	width: 100,
+	height: 100,
+	color: '#4D4D4D'
+};
+
 // inspired by http://bl.ocks.org/MattWoelk/6132258
 module.exports = function spinner(container, options) {
-	options = extend({}, {
-		width: 100,
-		height: 100,
-		color: '#4D4D4D'
-	}, options);
+	options = extend({}, defaultOptions, options);
 
 	var radius = Math.min(options.width, options.height) / 4;
 	var arc = d3.svg.arc()

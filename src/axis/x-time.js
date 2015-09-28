@@ -70,15 +70,13 @@ module.exports = function (graph, options) {
 	Axis.scale = scale;
 
 	Axis.render = function () {
-
-		var height = graph.height();
 		[
 			{axis: xticks},
 			{axis: xlabels, class: 'labels'}
 		].forEach(function(axis) {
 			graph.svg.append('g').attr({
 				class: 'axis x ' + (axis.class || ''),
-				transform: 'translate(0, ' + height + ')'
+				transform: 'translate(0, ' +  graph.height() + ')'
 			});
 		});
 	};

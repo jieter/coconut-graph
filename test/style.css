@@ -13,6 +13,11 @@
 .axis {
     font: 10px sans-serif;
 }
+.grid .tick line{
+   stroke: lightgrey;
+   opacity: 0.7;
+   stroke-with: 0.5;
+}
 .plot-line {
     fill: none;
     stroke-width: 1.5px;

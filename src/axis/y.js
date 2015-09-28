@@ -8,12 +8,7 @@ var defaultOptions = {
 	tickFormat: null
 };
 
-module.exports = function (graph, options) {
-
-	options = extend({}, defaultOptions, options);
-	var name = options.name;
-
-	var scale = d3.scale.linear().rangeRound([graph.height(), 0]);
+function make_axis(scale, options) {
 	var axis = d3.svg.axis().scale(scale).orient(options.orient);
 
 	if ('tickFormat' in options) {
@@ -23,6 +18,16 @@ module.exports = function (graph, options) {
 			axis.tickFormat(options.tickFormat);
 		}
 	}
+	return axis;
+}
+
+module.exports = function (graph, options) {
+	options = extend({}, defaultOptions, options);
+	var name = options.name;
+
+	var scale = d3.scale.linear().rangeRound([graph.height(), 0]);
+	var axis = make_axis(scale, options);
+	var guides = make_axis(scale, options).tickFormat('');
 
 	var Axis = function () {};
 	Axis.name = name;
@@ -44,6 +49,11 @@ module.exports = function (graph, options) {
 		} else {
 			text.attr({y: 6, dy: '.71em'});
 		}
+		if (options.guides) {
+			// insert guides before plotContainer to make sure
+			// the guides are behind the graph.
+			graph.svg.insert('g', ':first-child').attr('class', 'grid ' + name);
+		}
 	};
 	Axis.domain = function (extent) {
 		return scale.domain(extent).nice();
@@ -59,6 +69,11 @@ module.exports = function (graph, options) {
 			element.attr('transform', 'translate(' + graph.width() + ', 0)');
 		}
 		element.selectAll('.axislabel').text(options.label);
+
+		if (options.guides) {
+			guides.tickSize(-graph.width(), 0, 0);
+			graph.svg.selectAll('.grid.' + name).call(guides);
+		}
 	};
 
 	return Axis;

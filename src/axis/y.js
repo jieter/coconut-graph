@@ -71,7 +71,7 @@ module.exports = function (graph, options) {
 		element.selectAll('.axislabel').text(options.label);
 
 		if (options.guides) {
-			guides.tickSize(-graph.width(), 0, 0);
+			guides.tickSize(-graph.width(), 0, 0).ticks(options.ticks);
 			graph.svg.selectAll('.grid.' + name).call(guides);
 		}
 	};

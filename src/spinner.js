@@ -1,6 +1,7 @@
 var d3 = require('d3');
 var extend = require('extend');
 
+// inspired by http://bl.ocks.org/MattWoelk/6132258
 module.exports = function spinner(container, options) {
 	options = extend({}, {
 		width: 100,

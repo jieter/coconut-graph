@@ -1,6 +1,6 @@
 var extend = require('extend');
 var d3 = require('d3');
-require('./d3.nl_nl.js')(d3);
+require('../d3.nl_nl.js')(d3);
 
 var formatters = {
 	day: function (xticks, xlabels, width) {

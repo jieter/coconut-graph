@@ -5,8 +5,8 @@ var Util = require('./util.js');
 var d3 = require('d3');
 var d3legend = require('d3-legend')(d3);
 
-var xaxis = require('./time-xaxis.js');
-var yaxis = require('./yaxis.js');
+var xaxis = require('./axis/x-time.js');
+var yaxis = require('./axis/y.js');
 
 var spinner = require('./spinner.js');
 
@@ -22,7 +22,7 @@ var Graph = Class.extend({
 
 		axes: {
 			x: {},
-			y: {orient: 'left'}
+			y: {orient: 'left', guides: true}
 		}
 	},
 

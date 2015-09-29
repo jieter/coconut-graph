@@ -21,105 +21,105 @@ L.Class = function () {};
 
 L.Class.extend = function (props) {
 
-	// extended class with the new prototype
-	var NewClass = function () {
+    // extended class with the new prototype
+    var NewClass = function () {
 
-		// call the constructor
-		if (this.initialize) {
-			this.initialize.apply(this, arguments);
-		}
+        // call the constructor
+        if (this.initialize) {
+            this.initialize.apply(this, arguments);
+        }
 
-		// call all constructor hooks
-		if (this._initHooks) {
-			this.callInitHooks();
-		}
-	};
+        // call all constructor hooks
+        if (this._initHooks) {
+            this.callInitHooks();
+        }
+    };
 
-	// instantiate class without calling constructor
-	var F = function () {};
-	F.prototype = this.prototype;
+    // instantiate class without calling constructor
+    var F = function () {};
+    F.prototype = this.prototype;
 
-	var proto = new F();
-	proto.constructor = NewClass;
+    var proto = new F();
+    proto.constructor = NewClass;
 
-	NewClass.prototype = proto;
+    NewClass.prototype = proto;
 
-	//inherit parent's statics
-	for (var i in this) {
-		if (this.hasOwnProperty(i) && i !== 'prototype') {
-			NewClass[i] = this[i];
-		}
-	}
+    //inherit parent's statics
+    for (var i in this) {
+        if (this.hasOwnProperty(i) && i !== 'prototype') {
+            NewClass[i] = this[i];
+        }
+    }
 
-	// mix static properties into the class
-	if (props.statics) {
-		extend(NewClass, props.statics);
-		delete props.statics;
-	}
+    // mix static properties into the class
+    if (props.statics) {
+        extend(NewClass, props.statics);
+        delete props.statics;
+    }
 
-	// mix includes into the prototype
-	if (props.includes) {
-		extend.apply(null, [proto].concat(props.includes));
-		delete props.includes;
-	}
+    // mix includes into the prototype
+    if (props.includes) {
+        extend.apply(null, [proto].concat(props.includes));
+        delete props.includes;
+    }
 
-	// merge options
-	if (props.options && proto.options) {
-		props.options = extend({}, proto.options, props.options);
-	}
+    // merge options
+    if (props.options && proto.options) {
+        props.options = extend({}, proto.options, props.options);
+    }
 
-	// mix given properties into the prototype
-	extend(proto, props);
+    // mix given properties into the prototype
+    extend(proto, props);
 
-	proto._initHooks = [];
+    proto._initHooks = [];
 
-	var parent = this;
-	// jshint camelcase: false
-	NewClass.__super__ = parent.prototype;
+    var parent = this;
+    // jshint camelcase: false
+    NewClass.__super__ = parent.prototype;
 
-	// add method for calling all hooks
-	proto.callInitHooks = function () {
+    // add method for calling all hooks
+    proto.callInitHooks = function () {
 
-		if (this._initHooksCalled) { return; }
+        if (this._initHooksCalled) { return; }
 
-		if (parent.prototype.callInitHooks) {
-			parent.prototype.callInitHooks.call(this);
-		}
+        if (parent.prototype.callInitHooks) {
+            parent.prototype.callInitHooks.call(this);
+        }
 
-		this._initHooksCalled = true;
+        this._initHooksCalled = true;
 
-		for (var i = 0, len = proto._initHooks.length; i < len; i++) {
-			proto._initHooks[i].call(this);
-		}
-	};
+        for (var i = 0, len = proto._initHooks.length; i < len; i++) {
+            proto._initHooks[i].call(this);
+        }
+    };
 
-	return NewClass;
+    return NewClass;
 };
 
 
 // method for adding properties to prototype
 L.Class.include = function (props) {
-	extend(this.prototype, props);
+    extend(this.prototype, props);
 };
 
 // merge new default options to the Class
 L.Class.mergeOptions = function (options) {
-	extend(this.prototype.options, options);
+    extend(this.prototype.options, options);
 };
 
 // add a constructor hook
 L.Class.addInitHook = function (fn) { // (Function) || (String, args...)
-	var args = Array.prototype.slice.call(arguments, 1);
+    var args = Array.prototype.slice.call(arguments, 1);
 
-	var init = typeof fn === 'function' ? fn : function () {
-		this[fn].apply(this, args);
-	};
+    var init = typeof fn === 'function' ? fn : function () {
+        this[fn].apply(this, args);
+    };
 
-	this.prototype._initHooks = this.prototype._initHooks || [];
-	this.prototype._initHooks.push(init);
+    this.prototype._initHooks = this.prototype._initHooks || [];
+    this.prototype._initHooks.push(init);
 };
 
 // define Leaflet for Node module pattern loaders, including Browserify
 if (typeof module === 'object' && typeof module.exports === 'object') {
-	module.exports = L.Class;
+    module.exports = L.Class;
 }

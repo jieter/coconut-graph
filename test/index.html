@@ -1,38 +1,40 @@
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>coconut-graph tests</title>
-	<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-	<link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8">
+    <title>coconut-graph tests</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <link rel="stylesheet" href="style.css" />
 
-	<style>
-		#mocha {
-			clear: both;
-		}
-	</style>
+    <style>
+        #mocha {
+            clear: both;
+        }
+    </style>
 </head>
 <body>
-	<div id="container" class="container"></div>
-	<div id="mocha"></div>
 
-	<script src="../node_modules/source-map-support/browser-source-map-support.js"></script>
-	<script>sourceMapSupport.install();</script>
+<div id="container" class="container"></div>
+<div id="mocha"></div>
 
-	<script src="../bundle.js"></script>
+<script src="../node_modules/source-map-support/browser-source-map-support.js"></script>
+<script>sourceMapSupport.install();</script>
 
-	<script src="../node_modules/chai/chai.js"></script>
-	<script src="../node_modules/mocha/mocha.js"></script>
-	<script src="../node_modules/chai-spies/chai-spies.js"></script>
+<script src="../bundle.js"></script>
 
-	<script>
-		mocha.setup('bdd');
-	</script>
-	<script src="data.js"></script>
-	<script src="spec.js"></script>
+<script src="../node_modules/chai/chai.js"></script>
+<script src="../node_modules/mocha/mocha.js"></script>
+<script src="../node_modules/chai-spies/chai-spies.js"></script>
 
-	<script>
-		mocha.globals(['L']);
-		(window.mochaPhantomJS || mocha).run();
-	</script>
+<script>
+    mocha.setup('bdd');
+</script>
+<script src="data.js"></script>
+<script src="spec.js"></script>
+
+<script>
+    mocha.globals(['L']);
+    (window.mochaPhantomJS || mocha).run();
+</script>
+
 </body>
 </html>

@@ -44,7 +44,7 @@ module.exports = function spinner(container, options) {
             .attr('d', arc)
             .call(spin, 800);
 
-        return this;
+        return Spin;
     };
 
     Spin.remove = function () {

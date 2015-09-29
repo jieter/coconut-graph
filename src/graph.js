@@ -58,8 +58,7 @@ var Graph = Class.extend({
         this.spinner = spinner(this.container, {
             height: this.options.height,
             width: this.width()
-        });
-        this.spinner();
+        })();
 
         // Attach onresize listener
         // namespace resize events to be able to attach multiple listeners
@@ -149,6 +148,9 @@ var Graph = Class.extend({
                 }
             });
         }
+
+        // calculate extent for each axis
+        var extents = {};
         this.eachPlot(function(plot) {
             var extent = d3.extent(this.data.values, plot.data_function);
 
@@ -165,9 +167,17 @@ var Graph = Class.extend({
                 extent.push(0);
                 extent = d3.extent(extent);
             }
-            this.axes[plot.axis].domain(extent);
+            if (extents[plot.axis]) {
+                extents[plot.axis] = d3.extent(extent.concat(extents[plot.axis]));
+            } else {
+                // no other plot on this axis yet
+                extents[plot.axis] = d3.extent(extent);
+            }
         });
 
+        for (var ax in extents) {
+            this.axes[ax].domain(extents[ax]);
+        }
         this._updateAxes();
 
         var xscale = this.axes.x.scale;

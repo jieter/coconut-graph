@@ -144,7 +144,7 @@ describe('coconut-graph', function () {
         loader = new Graph.Loader(Graph.util.extend({}, data[0]), {
             graphs: [
                 {
-                    container: 'graph',
+                    container: container,
                     axes: {
                         y: {includeZero: true, guides: true},
                     },
@@ -155,5 +155,14 @@ describe('coconut-graph', function () {
                 }
             ]
         });
+        it('are correct', function () {
+            // foo has extent 5...7
+            // test has extent 1..5
+            // so we expect extent 1..7, including zero we get 0...7
+            var graph = loader.graphs[container];
+            graph.axes.y.scale.domain().should.eql([0, 7]);
+
+        });
+
     });
 });
